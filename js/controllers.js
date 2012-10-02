@@ -1,49 +1,47 @@
-function RouteCtrl($route) {
+function MenuCtrl($routeParams, $location, $scope) {
 
-    var self = this;
-
-    $route.when('/wines', {template:'tpl/welcome.html'});
-
-    $route.when('/wines/:wineId', {template:'tpl/wine-details.html', controller:WineDetailCtrl});
-
-    $route.otherwise({redirectTo:'/wines'});
-
-    $route.onChange(function () {
-        self.params = $route.current.params;
-    });
-
-    $route.parent(this);
-
-    this.addWine = function () {
-        window.location = "#/wines/add";
+    $scope.addWine = function () {
+        $location.path("/wines/add");
     };
 
 }
+MenuCtrl.$inject = ['$routeParams', '$location', '$scope'];
 
-function WineListCtrl(Wine) {
 
-    this.wines = Wine.query();
-
+function WineListCtrl(Wine, $location, $scope) {
+    $scope.wines = Wine.query(); 
 }
-
-function WineDetailCtrl(Wine) {
-
-    this.wine = Wine.get({wineId:this.params.wineId});
+WineListCtrl.$inject = ['Wine', '$location', '$scope'];
 
 
-    this.saveWine = function () {
-        if (this.wine.id > 0)
-            this.wine.$update({wineId:this.wine.id});
+function WineDetailCtrl(Wine, $routeParams, $location, $scope) {
+    $scope.wine = Wine.get({wineId: $routeParams.wineId}) 
+
+    $scope.saveWine = function () {
+        if ($scope.wine.id > 0)
+        {
+            Wine.update({wineId:$scope.wine.id}, $scope.wine, function (res) {
+                alert('Wine ' + $scope.wine.name + ' updated'); 
+                $location.path("/wines");
+                }
+            );
+        }
+        //If the request didn't return a match, it is a new wine
         else
-            this.wine.$save();
-        window.location = "#/wines";
+        {      
+            Wine.save({}, $scope.wine, function (res) {
+                alert('Wine ' + $scope.wine.name + ' created'); 
+                $location.path("/wines");
+                }
+            );
+        }
     }
 
-    this.deleteWine = function () {
-        this.wine.$delete({wineId:this.wine.id}, function(wine) {
-            alert('Wine ' + wine.name + ' deleted')
-            window.location = "#/wines";
+    $scope.deleteWine = function () {
+        Wine.delete({wineId:$scope.wine.id}, function(wine) {
+            alert('Wine ' + $scope.wine.name + ' deleted')
+            $location.path("/wines");
         });
     }
-
 }
+WineDetailCtrl.$inject = ['Wine', '$routeParams', '$location', '$scope'];
