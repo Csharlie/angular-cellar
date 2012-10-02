@@ -40,7 +40,7 @@ function WineDetailCtrl(Wine) {
     }
 
     this.deleteWine = function () {
-        this.wine.$delete({wineId:this.wine.id}, function() {
+        this.wine.$delete({wineId:this.wine.id}, function(wine) {
             alert('Wine ' + wine.name + ' deleted')
             window.location = "#/wines";
         });
