@@ -8,13 +8,18 @@ function MenuCtrl($routeParams, $location, $scope) {
 MenuCtrl.$inject = ['$routeParams', '$location', '$scope'];
 
 
-function WineListCtrl(Wine, $location, $scope) {
+function WineListCtrl(Wine, updateService, $location, $scope) {
     $scope.wines = Wine.query(); 
+
+    $scope.$on('handleBroadcast', function() {
+        $scope.wines = Wine.query(); 
+    });   
+
 }
-WineListCtrl.$inject = ['Wine', '$location', '$scope'];
+WineListCtrl.$inject = ['Wine', 'updateService', '$location', '$scope'];
 
 
-function WineDetailCtrl(Wine, $routeParams, $location, $scope) {
+function WineDetailCtrl(Wine, updateService, $routeParams, $location, $scope) {
     $scope.wine = Wine.get({wineId: $routeParams.wineId}) 
 
     $scope.saveWine = function () {
@@ -22,15 +27,16 @@ function WineDetailCtrl(Wine, $routeParams, $location, $scope) {
         {
             Wine.update({wineId:$scope.wine.id}, $scope.wine, function (res) {
                 alert('Wine ' + $scope.wine.name + ' updated'); 
+                updateService.broadcastItem();
                 $location.path("/wines");
                 }
             );
         }
-        //If the request didn't return a match, it is a new wine
         else
         {      
             Wine.save({}, $scope.wine, function (res) {
                 alert('Wine ' + $scope.wine.name + ' created'); 
+                updateService.broadcastItem();
                 $location.path("/wines");
                 }
             );
@@ -40,8 +46,9 @@ function WineDetailCtrl(Wine, $routeParams, $location, $scope) {
     $scope.deleteWine = function () {
         Wine.delete({wineId:$scope.wine.id}, function(wine) {
             alert('Wine ' + $scope.wine.name + ' deleted')
+            updateService.broadcastItem();
             $location.path("/wines");
         });
     }
 }
-WineDetailCtrl.$inject = ['Wine', '$routeParams', '$location', '$scope'];
+WineDetailCtrl.$inject = ['Wine', 'updateService', '$routeParams', '$location', '$scope'];
