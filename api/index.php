@@ -42,7 +42,6 @@ function getWine($id) {
 }
 
 function addWine() {
-	error_log('addWine\n', 3, '/var/tmp/php.log');
 	$request = Slim::getInstance()->request();
 	$wine = json_decode($request->getBody());
 	$sql = "INSERT INTO wine (name, grapes, country, region, year, description) VALUES (:name, :grapes, :country, :region, :year, :description)";
