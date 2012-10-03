@@ -2,7 +2,7 @@
 /* http://docs.angularjs.org/#!angular.service */
 
 // Declare app level module which depends on filters, and services
-angular.module('cellar', [ 'cellar.services' ]).
+angular.module('cellar', [ 'cellar.services', 'cellar.directives' ]).
   config(['$routeProvider', function($routeProvider) {
 
     $routeProvider
