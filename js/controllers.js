@@ -8,35 +8,36 @@ function MenuCtrl($routeParams, $location, $scope) {
 MenuCtrl.$inject = ['$routeParams', '$location', '$scope'];
 
 
-function WineListCtrl(Wine, updateService, $location, $scope) {
-    $scope.wines = Wine.query(); 
+function WineListCtrl(Wine, $location, $scope) {
+    $scope.wines = Wine.api.query(); 
 
     $scope.$on('handleBroadcast', function() {
-        $scope.wines = Wine.query(); 
+        $scope.wines = Wine.api.query(); 
     });   
 
 }
-WineListCtrl.$inject = ['Wine', 'updateService', '$location', '$scope'];
+WineListCtrl.$inject = ['Wine', '$location', '$scope'];
 
 
-function WineDetailCtrl(Wine, updateService, $routeParams, $location, $scope) {
-    $scope.wine = Wine.get({wineId: $routeParams.wineId}) 
+function WineDetailCtrl(Wine, $routeParams, $location, $scope) {
+    $scope.wine = Wine.api.get({wineId: $routeParams.wineId}) 
 
     $scope.saveWine = function () {
         if ($scope.wine.id > 0)
         {
-            Wine.update({wineId:$scope.wine.id}, $scope.wine, function (res) {
+            Wine.api.update({wineId:$scope.wine.id}, $scope.wine, function (res) {
                 alert('Wine ' + $scope.wine.name + ' updated'); 
-                updateService.broadcastItem();
+                Wine.broadcastChange();
                 $location.path("/wines");
                 }
             );
         }
+        //no match for wine means it's an empty form
         else
         {      
-            Wine.save({}, $scope.wine, function (res) {
+            Wine.api.save({}, $scope.wine, function (res) {
                 alert('Wine ' + $scope.wine.name + ' created'); 
-                updateService.broadcastItem();
+                Wine.broadcastChange();
                 $location.path("/wines");
                 }
             );
@@ -44,11 +45,11 @@ function WineDetailCtrl(Wine, updateService, $routeParams, $location, $scope) {
     }
 
     $scope.deleteWine = function () {
-        Wine.delete({wineId:$scope.wine.id}, function(wine) {
+        Wine.api.delete({wineId:$scope.wine.id}, function(wine) {
             alert('Wine ' + $scope.wine.name + ' deleted')
-            updateService.broadcastItem();
+            Wine.broadcastChange();
             $location.path("/wines");
         });
     }
 }
-WineDetailCtrl.$inject = ['Wine', 'updateService', '$routeParams', '$location', '$scope'];
+WineDetailCtrl.$inject = ['Wine', '$routeParams', '$location', '$scope'];
